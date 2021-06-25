@@ -14,8 +14,8 @@ in {
     enable = mkEnableOption "the Solanum IRC server";
 
     sid = mkOption {
-      type = strMatching "^[0-9][0-9A-F]{2}$";
-      example = "42F";
+      type = strMatching "^[0-9][0-9A-Z]{2}$";
+      example = "42X";
       description = ''
         The unique server id of this server
       '';
