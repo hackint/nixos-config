@@ -1,11 +1,13 @@
 { pkgs, lib, config, nodes, name, ... }:
-let
-  inherit (lib) mkEnableOption mkOption mkIf types optionalString attrValues mapAttrs filter concatMapStringsSep concatStringsSep filterAttrs;
 
+with lib;
+
+let
   certDir = "${config.security.acme.certs."${config.networking.fqdn}".directory}";
   dhParam = ./ffdhe4096.pem;
 
   isIPv6 = ip: builtins.length (lib.splitString ":" ip) > 2;
+  optionalNull = val: ret: optionalString (val != null) ret;
 
   cfg = config.hackint.solanum;
 
@@ -84,6 +86,9 @@ in {
     };
 
     opers = mkOption {
+      description = ''
+        Attribute set defining operators (O-line).
+      '';
       type = attrsOf (submodule ({ name, ... }: {
         options = {
           name = mkOption {
@@ -119,6 +124,110 @@ in {
             '';
             default = "+fsxZ";
             example = "+Zbfkrsuy";
+          };
+        };
+      }));
+    };
+
+    classes = mkOption {
+      description = ''
+        Attribute set defining connection classes (Y-Line).
+      '';
+      type = attrsOf (submodule ({ name, ... }: {
+        options = {
+          name = mkOption {
+            type = str;
+            default = name;
+            description = ''
+              Name to assign the connection class.
+            '';
+          };
+          maxConnections = mkOption {
+            type = ints.positive;
+            example = 8192;
+            description = ''
+              Maximum number of connections allowed in this class.
+            '';
+          };
+
+          pingTime = mkOption {
+            type = str;
+            default = "2 minutes";
+            example = "1 minute 30 seconds";
+            description = ''
+              Time for a connection to reply to a PING request, before they are dropped.
+            '';
+          };
+
+          sendQ = mkOption {
+            type = str;
+            example = "100 kbytes";
+            description = ''
+              Amount of data a client can send, before they are dropped.
+            '';
+          };
+
+          perIdent = mkOption {
+            type = nullOr ints.positive;
+            default = null;
+            example = 3;
+            description = ''
+              Maximum number of connections sharing the same user@host.
+              Unidented connections are counted as the same ident.
+            '';
+          };
+
+          perIP = mkOption {
+            type = nullOr ints.positive;
+            default = null;
+            example = 5;
+            description = ''
+              Maxium number of connections sharing the same host.
+            '';
+          };
+
+          perCIDR = mkOption {
+            type = nullOr ints.positive;
+            default = null;
+            example = 3;
+            description = ''
+              Maximum number of connections per defined subnet sizes.
+            '';
+          };
+
+          ipv6SubnetSize = mkOption {
+            type = nullOr (ints.between 0 128);
+            default = null;
+            example = 56;
+            description = ''
+              IPv6 subnet size considered for per CIDR limits.
+            '';
+          };
+
+          ipv4SubnetSize = mkOption {
+            type = nullOr (ints.between 0 32);
+            default = null;
+            example = 24;
+            description = ''
+              IPv4 subnet size considered for per CIDR limits.
+            '';
+          };
+
+          maxAutoconn = mkOption {
+            type = ints.between 0 1;
+            example = 1;
+            description = ''
+              Number of servers to autoconnect to.
+              Should be 0 for hubs, 1 for leafs.
+            '';
+          };
+
+          autoconnFreq = mkOption {
+            type = str;
+            example = "5 minutes";
+            description = ''
+              Delay between attempts to autoconnect servers.
+            '';
           };
         };
       }));
@@ -241,31 +350,22 @@ in {
           fname_ioerrorlog = "/dev/stderr";
         };
 
-        class "users" {
-          max_number = 64000;
-          number_per_ident = 3;
-          number_per_ip_global = 25;
-          cidr_ipv4_bitlen = 24;
-          cidr_ipv6_bitlen = 56;
-          number_per_cidr = 25;
-          sendq = 100 kbytes;
-          ping_time = 2 minutes;
+        ${concatMapStringsSep "\n" (class: ''
+        class "${class.name}" {
+          max_number = ${toString class.maxConnections};
+          ping_time = ${class.pingTime};
+          sendq = ${class.sendQ};
+        ''
+        + optionalNull class.perIdent "  number_per_ident = ${toString class.perIdent};\n"
+        + optionalNull class.perIP "  number_per_ip_global = ${toString class.perIP};\n"
+        + optionalNull class.perCIDR "  number_per_cidr = ${toString class.perCIDR};\n"
+        + optionalNull class.ipv6SubnetSize "  cidr_ipv6_bitlen = ${toString class.ipv6SubnetSize};\n"
+        + optionalNull class.ipv4SubnetSize "  cidr_ipv4_bitlen = ${toString class.ipv4SubnetSize};\n"
+        + optionalNull class.maxAutoconn "  max_autoconn = ${toString class.maxAutoconn};\n"
+        + optionalNull class.autoconnFreq "  connectfreq = ${class.autoconnFreq};\n"
+        + ''
         };
-
-        class "opers" {
-        	ping_time = 5 minutes;
-        	number_per_ip = 10;
-        	max_number = 20;
-        	sendq = 100 kbytes;
-        };
-
-        class "server" {
-        	ping_time = 5 minutes;
-        	connectfreq = 5 minutes;
-          max_number = 16;
-          max_autoconn = 1;
-        	sendq = 2 megabytes;
-        };
+        '') (attrValues cfg.classes)}
 
         listen {
           defer_accept = yes;
