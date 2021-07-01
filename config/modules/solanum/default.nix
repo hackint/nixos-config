@@ -214,7 +214,8 @@ in {
           };
 
           maxAutoconn = mkOption {
-            type = ints.between 0 1;
+            type = nullOr (ints.between 0 1);
+            default = null;
             example = 1;
             description = ''
               Number of servers to autoconnect to.
@@ -223,7 +224,8 @@ in {
           };
 
           autoconnFreq = mkOption {
-            type = str;
+            type = nullOr str;
+            default = null;
             example = "5 minutes";
             description = ''
               Delay between attempts to autoconnect servers.
