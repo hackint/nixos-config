@@ -373,7 +373,7 @@ in {
           defer_accept = yes;
 
           # client ports
-        	port = 6667;
+          port = 6667;
           sslport = 6697, 9999;
 
           # server ports
@@ -504,8 +504,8 @@ in {
         };
 
         blacklist {
-        	host = "rbl.efnetrbl.org";
-        	type = ipv4;
+          host = "rbl.efnetrbl.org";
+          type = ipv4;
           reject_reason = "''${nick}, your IP (''${ip}) is listed in EFnet's RBL. For assistance, see http://efnetrbl.org/?i=''${ip}";
 
           host = "dnsbl.dronebl.org";
