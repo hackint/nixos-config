@@ -214,7 +214,8 @@ in {
           };
 
           maxAutoconn = mkOption {
-            type = ints.between 0 1;
+            type = nullOr (ints.between 0 1);
+            default = null;
             example = 1;
             description = ''
               Number of servers to autoconnect to.
@@ -223,7 +224,8 @@ in {
           };
 
           autoconnFreq = mkOption {
-            type = str;
+            type = nullOr str;
+            default = null;
             example = "5 minutes";
             description = ''
               Delay between attempts to autoconnect servers.
@@ -231,6 +233,82 @@ in {
           };
         };
       }));
+    };
+
+    auth = mkOption {
+      description = ''
+        List of attribute sets defining auth blocks (I-Line), ordered by precedence.
+      '';
+      default = [];
+      type = listOf (submodule {
+        options = {
+          hostmasks = mkOption {
+            type = listOf str;
+            description = ''
+              List of hostmasks the users is allowed to connect from.
+            '';
+          };
+
+          class = mkOption {
+            type = enum (builtins.attrNames cfg.classes);
+            description = ''
+              Name of the connection class to assign the users to.
+            '';
+          };
+
+          username = mkOption {
+            type = nullOr str;
+            default = null;
+            description = ''
+              Username in a PASS login scheme, where user:pass is used instead of relying
+              on a matching hostmask. If not set the password alone can be used to login.
+            '';
+          };
+
+          password = mkOption {
+            type = nullOr str;
+            default = null;
+            description = ''
+              Plaintext pasword required to use this auth block. Consider using hashedPassword
+              for sensitive passwords instead, and set the encrypted flag if you do.
+            '';
+          };
+
+          spoof = mkOption {
+            type = nullOr str;
+            default = null;
+            description = ''
+              Free-form host or user@host override for everyone using this auth block.
+            '';
+          };
+
+          flags = mkOption {
+            type = nullOr (listOf (enum [
+              "encrypted"
+              "spoof_notice"
+              "exceed_limit"
+              "kline_exempt"
+              "dnsbl_exempt"
+              "proxy_exempt"
+              "spambot_exempt"
+              "shide_exempt"
+              "jupe_exempt"
+              "resv_exempt"
+              "flood_exempt"
+              "no_tilde"
+              "need_ident"
+              "need_ssl"
+              "need_sasl"
+              "extend_chans"
+              "kline_spoof_ip"
+            ]));
+            default = null;
+            description = ''
+              List of flags applying to everyone using this auth block.
+            '';
+          };
+        };
+      });
     };
   };
 
@@ -371,7 +449,7 @@ in {
           defer_accept = yes;
 
           # client ports
-        	port = 6667;
+          port = 6667;
           sslport = 6697, 9999;
 
           # server ports
@@ -379,10 +457,18 @@ in {
           sslport = 7000;
         };
 
+        ${concatMapStringsSep "\n" (auth: ''
         auth {
-        	user = "*@*";
-        	class = "users";
+        ${concatMapStringsSep "\n" (hostmask: "  user = \"${hostmask}\";") auth.hostmasks}
+        ''
+        + optionalNull auth.username "  auth_user = \"${auth.username}\";"
+        + optionalNull auth.password "  password = \"${auth.password}\";"
+        + optionalNull auth.spoof "  spoof = \"${auth.spoof}\";"
+        + optionalNull auth.flags "  flags = ${concatMapStringsSep ", " auth.flags};"
+        + ''
+          class = "${auth.class}";
         };
+        '') cfg.auth}
 
         privset "operator" {
           privs =
@@ -502,8 +588,8 @@ in {
         };
 
         blacklist {
-        	host = "rbl.efnetrbl.org";
-        	type = ipv4;
+          host = "rbl.efnetrbl.org";
+          type = ipv4;
           reject_reason = "''${nick}, your IP (''${ip}) is listed in EFnet's RBL. For assistance, see http://efnetrbl.org/?i=''${ip}";
 
           host = "dnsbl.dronebl.org";
