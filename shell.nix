@@ -1,10 +1,21 @@
 let
-  pkgs = import ./nix {};
+  pkgs = import ./nix { };
 
-in pkgs.mkShell {
+  pre-commit-hooks = pkgs.nix-pre-commit-hooks.run {
+    src = ./.;
+    hooks = {
+      nixpkgs-fmt.enable = true;
+    };
+  };
+
+in
+pkgs.mkShell {
   buildInputs = with pkgs; [
     git
     niv
     morph
+    nixpkgs-fmt
   ];
+
+  inherit (pre-commit-hooks) shellHook;
 }
