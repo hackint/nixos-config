@@ -1,7 +1,5 @@
 let
-  sources = import ../nix/sources.nix {};
-
-  pkgs = import sources."nixos-21.05" {};
+  pkgs = import ../nix { release = "21.05"; };
   lib = pkgs.lib;
 
   mkMachine = hostname: {
