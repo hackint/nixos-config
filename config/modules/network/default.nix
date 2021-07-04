@@ -1,4 +1,4 @@
-{ lib, config, ...}:
+{ lib, config, ... }:
 let
   inherit (lib) types mkOption filter;
 

@@ -1,6 +1,6 @@
 { config, ... }:
 {
-  users.groups.acme = {};
+  users.groups.acme = { };
 
   security.acme = {
     email = "mail@hackint.org";

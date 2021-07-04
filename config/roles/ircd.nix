@@ -7,8 +7,7 @@
       exempts = [
         # TODO: add monitoring
       ];
-      opers = {
-      };
+      opers = { };
       classes = {
         server = {
           pingTime = "5 minutes";
