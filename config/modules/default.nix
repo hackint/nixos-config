@@ -4,5 +4,6 @@
     #./atheme
     ./network
     ./solanum
+    ./dns/master
   ];
 }
