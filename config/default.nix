@@ -18,4 +18,5 @@ in
 
   staging_hub = mkMachine "hub.staging.hackint.org";
   staging_leaf1 = mkMachine "leaf1.staging.hackint.org";
+  staging_dns = mkMachine "dns.staging.hackint.org";
 }
