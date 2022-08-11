@@ -8,18 +8,27 @@ let
 in
 {
   options.hackint.network = with types; {
-    interface = mkOption {
+    interfaceName = mkOption {
       type = str;
-      example = "ens1";
+      default = "wan";
+      readOnly = true;
       description = ''
-        The name of the WAN-facing interface.
+        The interface name of the WAN-facing interface.
+      '';
+    };
+
+    macAddress = mkOption {
+      type = str;
+      example = "00:11:22:33:44:55";
+      description = ''
+        The MAC Address of the WAN-facing interface.
       '';
     };
 
     addresses = mkOption {
       type = listOf str;
-      default = [
-        "192.0.2.1/24"
+      example = [
+        "192.0.2.2/24"
         "2001:DB8::1/64"
       ];
       description = ''
@@ -43,8 +52,33 @@ in
       '';
     };
 
-    routes = mkOption {
-      type = null;
+    gateways = mkOption {
+      type = listOf str;
+      example = [
+        "192.0.2.1"
+        "fe80::1"
+      ];
+      description = ''
+        List of default gateway addresses.
+      '';
+    };
+  };
+
+  config = {
+    networking.useNetworkd = true;
+
+    # rename interface to wan
+    systemd.network.links."10-${cfg.interfaceName}" = {
+      matchConfig.MACAddress = cfg.macAddress;
+      linkConfig.Name = cfg.interfaceName;
+    };
+
+    # configure addressing and routing
+    systemd.network.networks."20-${cfg.interfaceName}" = {
+      matchConfig.Name = cfg.interfaceName;
+      linkConfig.RequiredForOnline = "routable";
+      address = cfg.addresses;
+      gateway = cfg.gateways;
     };
   };
 }
