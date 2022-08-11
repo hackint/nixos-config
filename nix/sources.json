@@ -5,10 +5,10 @@
         "homepage": null,
         "owner": "DBCDK",
         "repo": "morph",
-        "rev": "c4d0ba03a83decba3b616293b398b532b8d187e9",
-        "sha256": "1qzp5vw1kbykab0k5b49gczx7j7dmczs539qy5d58852gj7k9rdc",
+        "rev": "30207a7f5ab4c8a069e469a2b28d84024e702ad6",
+        "sha256": "0x07nidhizvcahhcq0y24kzf7q81c56193jmf9kmxjijzhwk6biz",
         "type": "tarball",
-        "url": "https://github.com/DBCDK/morph/archive/c4d0ba03a83decba3b616293b398b532b8d187e9.tar.gz",
+        "url": "https://github.com/DBCDK/morph/archive/30207a7f5ab4c8a069e469a2b28d84024e702ad6.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nix-pre-commit-hooks": {
