@@ -11,16 +11,28 @@
         "url": "https://github.com/DBCDK/morph/archive/c4d0ba03a83decba3b616293b398b532b8d187e9.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "nixos-21.05": {
-        "branch": "nixos-21.05",
+    "nix-pre-commit-hooks": {
+        "branch": "master",
+        "description": "Seamless integration of https://pre-commit.com git hooks with Nix.",
+        "homepage": "",
+        "owner": "cachix",
+        "repo": "pre-commit-hooks.nix",
+        "rev": "397f0713d007250a2c7a745e555fa16c5dc8cadb",
+        "sha256": "0hjbq4pf8a2qdndx0xdb3yjhx9l3l5grk4mlk78vw4zm32fgyrq2",
+        "type": "tarball",
+        "url": "https://github.com/cachix/pre-commit-hooks.nix/archive/397f0713d007250a2c7a745e555fa16c5dc8cadb.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixos-22.05": {
+        "branch": "nixos-22.05",
         "description": "Nix Packages collection",
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "0b8b127125e5271f5c8636680b6fe274844aaa9d",
-        "sha256": "1rjb1q28ivaf20aqj3v60kzjyi5lqb3krag0k8wwjqch45ik2f86",
+        "rev": "e4c9d950a3c54a0760b127d406f6528eb625eed8",
+        "sha256": "1sfyapxxhnplyn4jpcf5y4vy16lsayywajhyf8l6vsahlbrmmh0h",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/0b8b127125e5271f5c8636680b6fe274844aaa9d.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/e4c9d950a3c54a0760b127d406f6528eb625eed8.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs-unstable": {
@@ -33,18 +45,6 @@
         "sha256": "1amn6v3l55nfa2rylkwb4gzys7fp837yv7hgj89cn62chqypcclb",
         "type": "tarball",
         "url": "https://github.com/NixOS/nixpkgs/archive/c6a049a3d32293b24c0f894a840872cf67fd7c11.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "nix-pre-commit-hooks": {
-        "branch": "master",
-        "description": "Seamless integration of https://pre-commit.com git hooks with Nix.",
-        "homepage": "",
-        "owner": "cachix",
-        "repo": "pre-commit-hooks.nix",
-        "rev": "397f0713d007250a2c7a745e555fa16c5dc8cadb",
-        "sha256": "0hjbq4pf8a2qdndx0xdb3yjhx9l3l5grk4mlk78vw4zm32fgyrq2",
-        "type": "tarball",
-        "url": "https://github.com/cachix/pre-commit-hooks.nix/archive/397f0713d007250a2c7a745e555fa16c5dc8cadb.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
